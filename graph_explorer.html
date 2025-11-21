@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Graph Explorer – Teddy’s Function Lab</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* Page-specific styles for graph explorer */
+
+    .graph-layout {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 10px;
+    }
+
+    .graph-controls {
+      flex: 1 1 220px;
+    }
+
+    .graph-visual {
+      flex: 2 1 260px;
+    }
+
+    .graph-canvas-wrapper {
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      padding: 8px;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      max-width: 480px;
+      height: 260px;
+      border-radius: 8px;
+      background: #ffffff;
+    }
+
+    .axis-note {
+      font-size: 0.8rem;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+
+    .control-inline {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .control-inline label {
+      white-space: nowrap;
+    }
+
+    .range-input {
+      width: 80px;
+    }
+
+    .table-wrapper {
+      max-height: 220px;
+      overflow-y: auto;
+      margin-top: 8px;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      padding: 4px;
+    }
+
+    .mini-pill {
+      font-size: 0.75rem;
+      padding: 1px 6px;
+      border-radius: 999px;
+      background: #e0f2fe;
+      color: #0369a1;
+      margin-left: 4px;
+    }
+
+    @media (max-width: 640px) {
+      .graph-layout {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header style="margin-bottom: 18px;">
+      <a href="index.html">&larr; Back to Home</a>
+      <h1>Graph Explorer</h1>
+      <p class="subtitle">
+        Type a rule like <code>2*x + 3</code> or <code>x**2 - 1</code> and see a table of values and a graph.
+      </p>
+    </header>
+
+    <!-- Controls + Graph -->
+    <section class="card">
+      <div class="card-header">
+        <h2 style="margin: 0;">1. Define Your Function</h2>
+        <span class="tag">Explore</span>
+      </div>
+      <p>
+        Use <code>x</code> as your input variable. The graph will show points for x values in the range you choose.
+      </p>
+
+      <div class="graph-layout">
+        <!-- Controls -->
+        <div class="graph-controls">
+          <div class="form-row">
+            <label for="exprInput"><strong>Rule:</strong> f(x) =</label>
+            <input
+              type="text"
+              id="exprInput"
+              value="2*x + 3"
+              aria-label="Function rule"
+              placeholder="e.g., 2*x + 3 or x**2 - 1"
+            />
+          </div>
+
+          <div class="form-row control-inline">
+            <label for="xMin">x from</label>
+            <input
+              type="number"
+              id="xMin"
+              value="-5"
+              step="1"
+              class="range-input"
+            />
+            <label for="xMax">to</label>
+            <input
+              type="number"
+              id="xMax"
+              value="5"
+              step="1"
+              class="range-input"
+            />
+          </div>
+
+          <div class="form-row control-inline">
+            <label for="xStep">Step:</label>
+            <input
+              type="number"
+              id="xStep"
+              value="1"
+              step="0.5"
+              class="range-input"
+            />
+            <span class="mini-note">
+              Smaller step = more points.
+            </span>
+          </div>
+
+          <div class="form-row">
+            <button id="plotButton">Plot Function</button>
+            <button id="resetViewButton" class="secondary">Reset View</button>
+          </div>
+
+          <div id="graphFeedback" class="output-box" style="margin-top: 8px;">
+            Type a rule for f(x), choose a range, then click <strong>Plot Function</strong>.
+          </div>
+        </div>
+
+        <!-- Graph -->
+        <div class="graph-visual">
+          <div class="graph-canvas-wrapper">
+            <canvas id="graphCanvas" width="480" height="260"></canvas>
+          </div>
+          <p class="axis-note">
+            The horizontal axis is x, and the vertical axis is f(x).
+            The graph automatically rescales to fit your points.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Table + Reflection -->
+    <section class="card">
+      <div class="card-header">
+        <h2 style="margin: 0;">2. Table of Values</h2>
+        <span class="tag">Data</span>
+      </div>
+      <p>
+        These are the points that were plotted on the graph. Each row is a point (x, f(x)).
+      </p>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>x</th>
+              <th>f(x)</th>
+            </tr>
+          </thead>
+          <tbody id="valuesTableBody">
+            <!-- rows added by JS -->
+          </tbody>
+        </table>
+      </div>
+      <p class="mini-note">
+        Try changing the rule and see how the table and graph change together.
+      </p>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <h2 style="margin: 0;">3. Challenges</h2>
+        <span class="tag">Think</span>
+      </div>
+      <ul>
+        <li>
+          Try a line: <code>f(x) = 2*x + 1</code>.
+          <span class="mini-pill">Linear</span>
+        </li>
+        <li>
+          Try a curve: <code>f(x) = x**2</code> or <code>f(x) = x**2 - 4</code>.
+          <span class="mini-pill">Quadratic</span>
+        </li>
+        <li>
+          Try a “downhill” line: <code>f(x) = -x + 3</code>.
+          What do you notice about the slope?
+        </li>
+        <li>
+          Compare <code>f(x) = 2*x + 3</code> and <code>g(x) = 2*x - 1</code>. How are their graphs similar? Different?
+        </li>
+      </ul>
+    </section>
+  </div>
+
+  <script>
+    // Evaluate expression safely-ish with x
+    function evalExpression(expr, x) {
+      const forbidden = /[;{}[\]]/;
+      if (forbidden.test(expr)) {
+        throw new Error("Please use only math operations with x.");
+      }
+      const fn = new Function("x", "return " + expr + ";");
+      return fn(x);
+    }
+
+    function generatePoints(expr, xMin, xMax, xStep) {
+      const points = [];
+      const maxPoints = 400; // safety
+
+      if (xStep <= 0) {
+        throw new Error("Step must be greater than 0.");
+      }
+
+      let count = 0;
+      for (let x = xMin; x <= xMax + 1e-9; x += xStep) {
+        if (count++ > maxPoints) break;
+        const y = evalExpression(expr, x);
+        if (Number.isFinite(y)) {
+          points.push({ x, y });
+        }
+      }
+      if (points.length === 0) {
+        throw new Error("No valid points to plot. Check your function and range.");
+      }
+      return points;
+    }
+
+    function computeBounds(points) {
+      let minX = Infinity, maxX = -Infinity;
+      let minY = Infinity, maxY = -Infinity;
+      for (const p of points) {
+        if (p.x < minX) minX = p.x;
+        if (p.x > maxX) maxX = p.x;
+        if (p.y < minY) minY = p.y;
+        if (p.y > maxY) maxY = p.y;
+      }
+      // If all y's same, give a little vertical span
+      if (minY === maxY) {
+        minY -= 1;
+        maxY += 1;
+      }
+      // Add padding
+      const padX = (maxX - minX) * 0.1 || 1;
+      const padY = (maxY - minY) * 0.1 || 1;
+      return {
+        minX: minX - padX,
+        maxX: maxX + padX,
+        minY: minY - padY,
+        maxY: maxY + padY
+      };
+    }
+
+    function drawGraph(points) {
+      const canvas = document.getElementById("graphCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
+      const w = canvas.width;
+      const h = canvas.height;
+
+      ctx.clearRect(0, 0, w, h);
+
+      const bounds = computeBounds(points);
+      const { minX, maxX, minY, maxY } = bounds;
+
+      function toCanvasX(x) {
+        return ((x - minX) / (maxX - minX)) * w;
+      }
+      function toCanvasY(y) {
+        return h - ((y - minY) / (maxY - minY)) * h;
+      }
+
+      // Background grid
+      ctx.save();
+      ctx.strokeStyle = "#e5e7eb";
+      ctx.lineWidth = 1;
+
+      // Vertical grid lines
+      const gridLines = 8;
+      for (let i = 1; i < gridLines; i++) {
+        const gx = (w / gridLines) * i;
+        ctx.beginPath();
+        ctx.moveTo(gx, 0);
+        ctx.lineTo(gx, h);
+        ctx.stroke();
+      }
+
+      // Horizontal grid lines
+      for (let i = 1; i < gridLines; i++) {
+        const gy = (h / gridLines) * i;
+        ctx.beginPath();
+        ctx.moveTo(0, gy);
+        ctx.lineTo(w, gy);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // Axes (x=0 and y=0 if in range)
+      ctx.save();
+      ctx.strokeStyle = "#111827";
+      ctx.lineWidth = 1.5;
+
+      // x-axis (y=0)
+      if (minY < 0 && maxY > 0) {
+        const y0 = toCanvasY(0);
+        ctx.beginPath();
+        ctx.moveTo(0, y0);
+        ctx.lineTo(w, y0);
+        ctx.stroke();
+      }
+
+      // y-axis (x=0)
+      if (minX < 0 && maxX > 0) {
+        const x0 = toCanvasX(0);
+        ctx.beginPath();
+        ctx.moveTo(x0, 0);
+        ctx.lineTo(x0, h);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // Plot line
+      ctx.save();
+      ctx.strokeStyle = "#2563eb";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      points.forEach((p, index) => {
+        const cx = toCanvasX(p.x);
+        const cy = toCanvasY(p.y);
+        if (index === 0) {
+          ctx.moveTo(cx, cy);
+        } else {
+          ctx.lineTo(cx, cy);
+        }
+      });
+      ctx.stroke();
+      ctx.restore();
+
+      // Plot points
+      ctx.save();
+      ctx.fillStyle = "#1d4ed8";
+      points.forEach((p) => {
+        const cx = toCanvasX(p.x);
+        const cy = toCanvasY(p.y);
+        ctx.beginPath();
+        ctx.arc(cx, cy, 3, 0, 2 * Math.PI);
+        ctx.fill();
+      });
+      ctx.restore();
+    }
+
+    function renderTable(points) {
+      const tbody = document.getElementById("valuesTableBody");
+      if (!tbody) return;
+      tbody.innerHTML = "";
+
+      points.forEach((p) => {
+        const tr = document.createElement("tr");
+        const tdX = document.createElement("td");
+        const tdY = document.createElement("td");
+        tdX.textContent = Number.isInteger(p.x) ? p.x : p.x.toFixed(2);
+        tdY.textContent = Math.abs(p.y) < 1e-6
+          ? "0"
+          : (Math.abs(p.y) < 1000 ? p.y.toFixed(3) : p.y.toExponential(2));
+        tr.appendChild(tdX);
+        tr.appendChild(tdY);
+        tbody.appendChild(tr);
+      });
+    }
+
+    function plotCurrentFunction() {
+      const exprInput = document.getElementById("exprInput");
+      const xMinInput = document.getElementById("xMin");
+      const xMaxInput = document.getElementById("xMax");
+      const xStepInput = document.getElementById("xStep");
+      const feedback = document.getElementById("graphFeedback");
+
+      if (!exprInput || !xMinInput || !xMaxInput || !xStepInput || !feedback) return;
+
+      const expr = exprInput.value.trim();
+      const xMin = Number(xMinInput.value);
+      const xMax = Number(xMaxInput.value);
+      let xStep = Number(xStepInput.value);
+
+      if (!expr) {
+        feedback.classList.add("error");
+        feedback.textContent = "Please type a rule, like 2*x + 3 or x**2 - 1.";
+        return;
+      }
+      if (!Number.isFinite(xMin) || !Number.isFinite(xMax) || xMin >= xMax) {
+        feedback.classList.add("error");
+        feedback.textContent = "Check your x range. Make sure the minimum is less than the maximum.";
+        return;
+      }
+      if (!Number.isFinite(xStep) || xStep <= 0) {
+        xStep = 1;
+        xStepInput.value = "1";
+      }
+
+      try {
+        const points = generatePoints(expr, xMin, xMax, xStep);
+        drawGraph(points);
+        renderTable(points);
+        feedback.classList.remove("error");
+        feedback.textContent = `Plotted f(x) = ${expr} for x from ${xMin} to ${xMax} with step ${xStep}.`;
+      } catch (err) {
+        feedback.classList.add("error");
+        feedback.textContent = err.message || "Something went wrong while plotting.";
+      }
+    }
+
+    function resetView() {
+      const exprInput = document.getElementById("exprInput");
+      const xMinInput = document.getElementById("xMin");
+      const xMaxInput = document.getElementById("xMax");
+      const xStepInput = document.getElementById("xStep");
+      const feedback = document.getElementById("graphFeedback");
+
+      if (!exprInput || !xMinInput || !xMaxInput || !xStepInput || !feedback) return;
+
+      exprInput.value = "2*x + 3";
+      xMinInput.value = -5;
+      xMaxInput.value = 5;
+      xStepInput.value = 1;
+      feedback.classList.remove("error");
+      feedback.textContent =
+        "Type a rule for f(x), choose a range, then click Plot Function.";
+
+      // Clear table and graph
+      const tbody = document.getElementById("valuesTableBody");
+      if (tbody) tbody.innerHTML = "";
+
+      const canvas = document.getElementById("graphCanvas");
+      if (canvas) {
+        const ctx = canvas.getContext("2d");
+        if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+
+    (function initGraphExplorer() {
+      const plotButton = document.getElementById("plotButton");
+      const resetButton = document.getElementById("resetViewButton");
+      const exprInput = document.getElementById("exprInput");
+
+      if (plotButton) {
+        plotButton.addEventListener("click", plotCurrentFunction);
+      }
+      if (resetButton) {
+        resetButton.addEventListener("click", resetView);
+      }
+
+      // Plot when pressing Enter in the expression box
+      if (exprInput) {
+        exprInput.addEventListener("keydown", function (event) {
+          if (event.key === "Enter") {
+            plotCurrentFunction();
+          }
+        });
+      }
+
+      // Initial plot
+      plotCurrentFunction();
+    })();
+  </script>
+</body>
+</html>
