@@ -71,6 +71,52 @@
       }
     }
 
+    /* Two-column row for quote + challenge */
+    .two-column-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .card-half {
+      flex: 1 1 280px;
+    }
+
+    .quote-text {
+      font-style: italic;
+      margin-bottom: 4px;
+    }
+
+    .quote-author {
+      font-size: 0.9rem;
+      color: #4b5563;
+    }
+
+    .quote-small {
+      font-size: 0.75rem;
+      color: #9ca3af;
+      margin-top: 4px;
+    }
+
+    .section-divider {
+      margin: 24px 0;
+      border: none;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    /* Grade sections side-by-side */
+    .grade-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .grade-card {
+      flex: 1 1 320px;
+    }
+
     .grade-header {
       display: flex;
       justify-content: space-between;
@@ -116,27 +162,25 @@
       margin-left: 4px;
     }
 
-    .quote-text {
-      font-style: italic;
-      margin-bottom: 4px;
-    }
-
-    .quote-author {
-      font-size: 0.9rem;
-      color: #4b5563;
-    }
-
-    .quote-small {
-      font-size: 0.75rem;
-      color: #9ca3af;
-      margin-top: 4px;
-    }
-
     .footer-note {
       font-size: 0.8rem;
       color: #6b7280;
       margin-top: 24px;
       text-align: center;
+    }
+
+    .challenge-title {
+      margin-bottom: 0.4rem;
+    }
+
+    .challenge-text {
+      margin-bottom: 4px;
+    }
+
+    .challenge-answer {
+      font-size: 0.9rem;
+      color: #4b5563;
+      margin-top: 4px;
     }
 
     @media (max-width: 640px) {
@@ -147,6 +191,14 @@
       .hero-banner {
         justify-content: center;
       }
+
+      .two-column-row {
+        flex-direction: column;
+      }
+
+      .grade-grid {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
@@ -155,7 +207,7 @@
     <header style="margin-bottom: 18px;">
       <h1>Math with Dad</h1>
       <p class="subtitle">
-        A special math lab just for <strong>[Grade 4 kid’s name]</strong> and <strong>[Grade 3 kid’s name]</strong>.
+        A special math lab just for <strong>Teddy (Grade 4)</strong> and <strong>Ada (Grade 3)</strong>.
         Pick your grade and jump into a lesson.
       </p>
     </header>
@@ -176,7 +228,8 @@
         <div class="hero-banner">
           <div class="hero-banner-inner">
             <!-- Replace dad-banner.jpg with your actual image file name -->
-            <img src="dad-banner.jpg" alt="Dad banner image" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" />
+            <img src="dad-banner.jpg" alt="Dad banner image"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='block';" />
             <div class="hero-banner-placeholder" style="display:none;">
               [Add a picture of Dad here by uploading <code>dad-banner.jpg</code> to the repo]
             </div>
@@ -185,70 +238,97 @@
       </div>
     </section>
 
-    <!-- Quote of the Day -->
-    <section class="card">
-      <div class="card-header">
-        <h2 style="margin: 0;">Quote of the Day</h2>
-        <span class="tag">Fresh every day</span>
-      </div>
-      <p id="quoteText" class="quote-text">
-        Loading today’s quote…
-      </p>
-      <p id="quoteAuthor" class="quote-author"></p>
-      <p class="quote-small">
-        This quote is chosen from a list of favorites and changes once per day.
-      </p>
-    </section>
+    <!-- Quote of the Day + Math Challenge row -->
+    <div class="two-column-row">
+      <!-- Quote of the Day -->
+      <section class="card card-half">
+        <div class="card-header">
+          <h2 style="margin: 0;">Quote of the Day</h2>
+          <span class="tag">Fresh every day</span>
+        </div>
+        <p id="quoteText" class="quote-text">
+          Loading today’s quote…
+        </p>
+        <p id="quoteAuthor" class="quote-author"></p>
+        <p class="quote-small">
+          This quote is chosen from a list of favorites and changes once per day.
+        </p>
+      </section>
 
-    <!-- Grade 4 Section -->
-    <section class="card">
-      <div class="grade-header">
-        <h2 class="grade-title">Grade 4 – Algebra Star</h2>
-        <span class="grade-label">Current focus</span>
-      </div>
-      <p>
-        Start here if you’re working on variables and algebraic expressions. These lessons are designed
-        to stretch your brain and connect to real problem-solving.
-      </p>
-      <ul class="lesson-list">
-        <li>
-          <a href="lesson1.html">Lesson 1 – What is a Variable?</a>
-          <div class="lesson-meta">
-            Explore how a letter like <code>x</code> can stand for many numbers.
-            <span class="badge-soft">Interactive machine</span>
-          </div>
-        </li>
-        <li>
-          <a href="lesson2.html">Lesson 2 – Writing and Evaluating Expressions</a>
-          <div class="lesson-meta">
-            Turn word rules into algebra expressions and test them with different values.
-            <span class="badge-soft">Expression builder</span>
-          </div>
-        </li>
-      </ul>
-    </section>
+      <!-- Math Challenge -->
+      <section class="card card-half">
+        <div class="card-header">
+          <h2 class="challenge-title" style="margin: 0;">Math Challenge</h2>
+          <span class="tag">Try this</span>
+        </div>
+        <p id="challengeText" class="challenge-text">
+          Loading a fun challenge…
+        </p>
+        <p id="challengeAnswer" class="challenge-answer" style="display:none;"></p>
+        <div class="form-row" style="margin-top: 8px;">
+          <button id="newChallengeButton">New Challenge</button>
+          <button id="showAnswerButton" class="secondary">Show Answer</button>
+        </div>
+        <p class="quote-small">
+          Try to solve it in your head or on paper before you peek at the answer.
+        </p>
+      </section>
+    </div>
 
-    <!-- Grade 3 Section -->
-    <section class="card">
-      <div class="grade-header">
-        <h2 class="grade-title">Grade 3 – Coming Soon</h2>
-        <span class="grade-label" style="background:#fef9c3;border-color:#fef3c7;color:#92400e;">
-          In development
-        </span>
-      </div>
-      <p>
-        This section will be for building strong number sense and problem-solving skills.
-        It will include puzzles, patterns, and games that get you ready for Grade 4 algebra.
-      </p>
-      <p class="mini-note">
-        Dad will add Grade 3 lessons here, and you’ll be able to come back next year and revisit
-        the Grade 4 lessons too.
-      </p>
-      <ul class="lesson-list">
-        <li>Future Lesson – Patterns and Functions (coming soon)</li>
-        <li>Future Lesson – Multiplication Machines (coming soon)</li>
-      </ul>
-    </section>
+    <hr class="section-divider" />
+
+    <!-- Grade sections side by side -->
+    <div class="grade-grid">
+      <!-- Grade 3 (Ada) on the left -->
+      <section class="card grade-card">
+        <div class="grade-header">
+          <h2 class="grade-title">Grade 3 – Ada’s Corner</h2>
+          <span class="grade-label" style="background:#fef9c3;border-color:#fef3c7;color:#92400e;">
+            In development
+          </span>
+        </div>
+        <p>
+          This section will be for building strong number sense and problem-solving skills.
+          It will include puzzles, patterns, and games that get you ready for Grade 4 algebra.
+        </p>
+        <p class="mini-note">
+          Ada: these lessons are coming soon! For now, you can watch Teddy’s lessons
+          or help him solve his challenges.
+        </p>
+        <ul class="lesson-list">
+          <li>Future Lesson – Patterns and Functions (coming soon)</li>
+          <li>Future Lesson – Multiplication Machines (coming soon)</li>
+        </ul>
+      </section>
+
+      <!-- Grade 4 (Teddy) on the right -->
+      <section class="card grade-card">
+        <div class="grade-header">
+          <h2 class="grade-title">Grade 4 – Teddy’s Algebra Lab</h2>
+          <span class="grade-label">Current focus</span>
+        </div>
+        <p>
+          Start here if you’re working on variables and algebraic expressions.
+          These lessons are designed to stretch your brain and connect to real problem-solving.
+        </p>
+        <ul class="lesson-list">
+          <li>
+            <a href="lesson1.html">Lesson 1 – What is a Variable?</a>
+            <div class="lesson-meta">
+              Explore how a letter like <code>x</code> can stand for many numbers.
+              <span class="badge-soft">Interactive machine</span>
+            </div>
+          </li>
+          <li>
+            <a href="lesson2.html">Lesson 2 – Writing and Evaluating Expressions</a>
+            <div class="lesson-meta">
+              Turn word rules into algebra expressions and test them with different values.
+              <span class="badge-soft">Expression builder</span>
+            </div>
+          </li>
+        </ul>
+      </section>
+    </div>
 
     <p class="footer-note">
       Built with love, HTML, CSS, and a little JavaScript. If something looks weird, tell Dad and he’ll debug it.
@@ -256,7 +336,7 @@
   </div>
 
   <script>
-    // Simple "quote of the day" from a local list, using localStorage to keep it for one calendar day.
+    // Quote of the Day
     (function () {
       const quotes = [
         {
@@ -314,6 +394,70 @@
       const q = quotes[index];
       quoteTextEl.textContent = "“" + q.text + "”";
       quoteAuthorEl.textContent = "— " + q.author;
+    })();
+
+    // Math Challenge
+    (function () {
+      const challenges = [
+        {
+          text: "Teddy has 3 Bitcoin stickers. Each sheet has 4 stickers. How many stickers will he have if he buys 2 more sheets?",
+          answer: "Each sheet has 4 stickers, so 2 sheets = 8 stickers. 3 + 8 = 11 stickers."
+        },
+        {
+          text: "Ada rolls a die 3 times and gets 4, 4, and 6. What is the total, and what is the average (mean) of her rolls?",
+          answer: "Total: 4 + 4 + 6 = 14. Average: 14 ÷ 3 ≈ 4.67."
+        },
+        {
+          text: "A function machine uses the rule f(x) = 2x + 5. If x = 7, what is f(7)?",
+          answer: "f(7) = 2·7 + 5 = 14 + 5 = 19."
+        },
+        {
+          text: "You have 48 pieces of candy and want to share them equally between Teddy and Ada and two friends (4 kids total). How many pieces does each kid get?",
+          answer: "48 ÷ 4 = 12 pieces each."
+        },
+        {
+          text: "The expression 3x + 2 equals 20. What value of x makes this true?",
+          answer: "3x + 2 = 20 → 3x = 18 → x = 6."
+        },
+        {
+          text: "Ada walks 3 blocks to the park and 3 blocks back home, every day for 5 days. How many blocks did she walk in total?",
+          answer: "Each day: 3 + 3 = 6 blocks. Over 5 days: 6 × 5 = 30 blocks."
+        },
+        {
+          text: "A rectangle has a length of 8 units and a width of 5 units. What is its perimeter?",
+          answer: "Perimeter = 2·(length + width) = 2·(8 + 5) = 2·13 = 26 units."
+        }
+      ];
+
+      const textEl = document.getElementById("challengeText");
+      const answerEl = document.getElementById("challengeAnswer");
+      const newBtn = document.getElementById("newChallengeButton");
+      const showBtn = document.getElementById("showAnswerButton");
+
+      if (!textEl || !answerEl || !newBtn || !showBtn) return;
+
+      let currentIndex = 0;
+
+      function pickChallenge() {
+        const newIndex = Math.floor(Math.random() * challenges.length);
+        currentIndex = newIndex;
+        const ch = challenges[currentIndex];
+        textEl.textContent = ch.text;
+        answerEl.textContent = "Answer: " + ch.answer;
+        answerEl.style.display = "none";
+      }
+
+      newBtn.addEventListener("click", pickChallenge);
+      showBtn.addEventListener("click", function () {
+        if (answerEl.style.display === "none") {
+          answerEl.style.display = "block";
+        } else {
+          answerEl.style.display = "none";
+        }
+      });
+
+      // Initialize with a random challenge on load
+      pickChallenge();
     })();
   </script>
 </body>
