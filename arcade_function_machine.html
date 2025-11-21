@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Function Machine Arcade – Teddy’s Levels</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* Page-specific styles for the arcade */
+
+    .arcade-header-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: baseline;
+    }
+
+    .arcade-subtitle {
+      color: #4b5563;
+      margin-top: 0.25rem;
+    }
+
+    .level-badge {
+      font-size: 0.8rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #ecfeff;
+      color: #0e7490;
+      border: 1px solid #cffafe;
+    }
+
+    .progress-text {
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+
+    .levels-list {
+      list-style: none;
+      padding-left: 0;
+      margin: 0;
+    }
+
+    .levels-list li {
+      margin-bottom: 4px;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .level-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      flex-shrink: 0;
+    }
+
+    .level-dot.current {
+      background: #4f46e5;
+    }
+
+    .level-dot.done {
+      background: #22c55e;
+    }
+
+    .level-label {
+      flex: 1;
+    }
+
+    .badge-easy {
+      font-size: 0.7rem;
+      padding: 1px 6px;
+      border-radius: 999px;
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .badge-medium {
+      font-size: 0.7rem;
+      padding: 1px 6px;
+      border-radius: 999px;
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .badge-hard {
+      font-size: 0.7rem;
+      padding: 1px 6px;
+      border-radius: 999px;
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .io-table-note {
+      font-size: 0.8rem;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+
+    .rule-input-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .rule-input-row input[type="text"] {
+      flex: 1 1 160px;
+    }
+
+    .hint-text {
+      font-size: 0.85rem;
+      color: #6b7280;
+      margin-top: 6px;
+    }
+
+    .attempts-text {
+      font-size: 0.85rem;
+      color: #4b5563;
+      margin-top: 4px;
+    }
+
+    .arcade-footer-note {
+      font-size: 0.8rem;
+      color: #6b7280;
+      margin-top: 18px;
+    }
+
+    @media (max-width: 640px) {
+      .rule-input-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header style="margin-bottom: 18px;">
+      <a href="index.html">&larr; Back to Home</a>
+      <div class="arcade-header-row">
+        <div>
+          <h1>Function Machine Arcade</h1>
+          <p class="arcade-subtitle">
+            Guess the rule behind each mystery machine using input–output tables. Type your rule using
+            <code>x</code> and see if it matches.
+          </p>
+        </div>
+        <div>
+          <span class="level-badge" id="arcadeProgressBadge">Level 1 of 6</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Level overview -->
+    <section class="card">
+      <div class="card-header">
+        <h2 style="margin: 0;">Level Map</h2>
+        <span class="tag">Progress</span>
+      </div>
+      <p class="mini-note">
+        Green = finished, purple = current level. You can always replay an earlier level to explain the rule
+        in a new way.
+      </p>
+      <ul class="levels-list" id="levelsList">
+        <!-- Filled by JS -->
+      </ul>
+    </section>
+
+    <!-- Current Level -->
+    <section class="card">
+      <div class="card-header">
+        <h2 style="margin: 0;" id="levelTitle">Level Title</h2>
+        <span class="tag" id="levelDifficultyTag">Difficulty</span>
+      </div>
+      <p id="levelDescription">
+        Level description goes here.
+      </p>
+
+      <h3>Input → Output Table</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>x (input)</th>
+            <th>f(x) (output)</th>
+          </tr>
+        </thead>
+        <tbody id="ioTableBody">
+          <!-- rows added by JS -->
+        </tbody>
+      </table>
+      <p class="io-table-note">
+        Look for patterns. How is the output changing as x changes? Is it multiplying, adding, or both?
+      </p>
+
+      <div class="rule-input-row">
+        <label for="ruleGuess"><strong>Your guess for the rule:</strong> f(x) =</label>
+        <input
+          type="text"
+          id="ruleGuess"
+          placeholder="e.g., 2*x + 3 or x - 4"
+          aria-label="Type your rule here"
+        />
+        <button id="checkRuleButton">Check Rule</button>
+        <button id="showHintButton" class="secondary">Hint</button>
+      </div>
+
+      <div id="ruleFeedback" class="output-box" style="margin-top: 8px;">
+        Study the table, then type a rule using <code>x</code> and click <strong>Check Rule</strong>.
+      </div>
+      <p class="attempts-text" id="attemptsText">
+        Attempts on this level: 0
+      </p>
+      <p class="hint-text" id="hintText">
+        Hint: focus on one example. What happens to x to get f(x)?
+      </p>
+
+      <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+        <button id="nextLevelButton" class="secondary" disabled>Next Level ▶</button>
+        <button id="resetLevelButton" class="secondary">Try Again</button>
+      </div>
+    </section>
+
+    <!-- Reflection / meta -->
+    <section class="card">
+      <div class="card-header">
+        <h2 style="margin: 0;">Arcade Reflection</h2>
+        <span class="tag">Think</span>
+      </div>
+      <p>
+        When you solve a level, try saying the rule in words <em>and</em> in algebra. For example:
+      </p>
+      <ul>
+        <li>Words: “Triple the number, then subtract 1.”</li>
+        <li>Algebra: <code>f(x) = 3*x - 1</code></li>
+      </ul>
+      <p>
+        You can also ask questions:
+      </p>
+      <ul>
+        <li>“If I know the rule, can I predict f(100) without a table?”</li>
+        <li>“If I change x by 1, how much does f(x) change?”</li>
+      </ul>
+      <p class="mini-note">
+        These are the same kinds of questions mathematicians and programmers ask all the time.
+      </p>
+    </section>
+
+    <p class="arcade-footer-note">
+      Tip for Dad: You can add new levels later by extending the <code>levels</code> array in the script. Each
+      level has a description, example table, and an answer rule.
+    </p>
+  </div>
+
+  <script>
+    // Safe-ish expression evaluator for rules like 2*x + 3, x/2 - 1, x**2 + 1, etc.
+    function evalRuleExpression(expr, x) {
+      const forbidden = /[;{}[\]]/;
+      if (forbidden.test(expr)) {
+        throw new Error("Please use only math operations with x.");
+      }
+      const fn = new Function("x", "return " + expr + ";");
+      return fn(x);
+    }
+
+    // Define arcade levels
+    const levels = [
+      {
+        id: 1,
+        title: "Level 1 – Add 3",
+        difficulty: "easy",
+        description: "This machine takes your number and adds the same number every time.",
+        answerRule: "x + 3",
+        examples: [
+          { x: 1, y: 4 },
+          { x: 2, y: 5 },
+          { x: 5, y: 8 }
+        ],
+        hint: "Check: what do you add to x to get f(x)?"
+      },
+      {
+        id: 2,
+        title: "Level 2 – Double then Add",
+        difficulty: "easy",
+        description: "Now the machine multiplies first, then adds.",
+        answerRule: "2*x + 1",
+        examples: [
+          { x: 1, y: 3 },
+          { x: 2, y: 5 },
+          { x: 5, y: 11 }
+        ],
+        hint: "Try working backward from one example: what times x, then what plus something, gets the output?"
+      },
+      {
+        id: 3,
+        title: "Level 3 – Triple and Shift",
+        difficulty: "medium",
+        description: "The outputs grow faster. That usually means multiplication by something bigger.",
+        answerRule: "3*x - 2",
+        examples: [
+          { x: 1, y: 1 },
+          { x: 3, y: 7 },
+          { x: 5, y: 13 }
+        ],
+        hint: "Look at how much f(x) changes when x goes up by 1 or 2."
+      },
+      {
+        id: 4,
+        title: "Level 4 – Halves and Offsets",
+        difficulty: "medium",
+        description: "The machine shrinks the number first, then shifts it.",
+        answerRule: "x/2 + 4",
+        examples: [
+          { x: 2, y: 5 },
+          { x: 4, y: 6 },
+          { x: 10, y: 9 }
+        ],
+        hint: "Try undoing the last step first: what would you subtract from the output to get the multiplied part?"
+      },
+      {
+        id: 5,
+        title: "Level 5 – Squares",
+        difficulty: "hard",
+        description: "Now the machine uses a square. The output is not changing at a steady rate.",
+        answerRule: "x**2 + 1",
+        examples: [
+          { x: 0, y: 1 },
+          { x: 1, y: 2 },
+          { x: 2, y: 5 }
+        ],
+        hint: "Does the output grow like x, or like x squared? Try plugging in 0, 1, 2 in your guess."
+      },
+      {
+        id: 6,
+        title: "Level 6 – Mixed Linear",
+        difficulty: "hard",
+        description: "The machine uses a negative multiplier and then a shift. The outputs go down as x goes up.",
+        answerRule: "-2*x + 10",
+        examples: [
+          { x: 1, y: 8 },
+          { x: 3, y: 4 },
+          { x: 5, y: 0 }
+        ],
+        hint: "As x increases by 2, how much does f(x) change? That tells you the multiplier."
+      }
+    ];
+
+    let currentLevelIndex = 0;
+    let attemptsOnLevel = 0;
+    let completedLevelIds = new Set();
+
+    // Load progress from localStorage
+    (function loadProgress() {
+      try {
+        const stored = localStorage.getItem("mwd_arcade_completed");
+        if (stored) {
+          const ids = JSON.parse(stored);
+          if (Array.isArray(ids)) {
+            completedLevelIds = new Set(ids);
+          }
+        }
+      } catch (e) {
+        console.warn("Could not load arcade progress:", e);
+      }
+    })();
+
+    function saveProgress() {
+      try {
+        localStorage.setItem(
+          "mwd_arcade_completed",
+          JSON.stringify(Array.from(completedLevelIds))
+        );
+      } catch (e) {
+        console.warn("Could not save arcade progress:", e);
+      }
+    }
+
+    function difficultyTagText(level) {
+      if (level.difficulty === "easy") return "Easy";
+      if (level.difficulty === "medium") return "Medium";
+      if (level.difficulty === "hard") return "Challenging";
+      return "Level";
+    }
+
+    function difficultyTagClass(level) {
+      if (level.difficulty === "easy") return "badge-easy";
+      if (level.difficulty === "medium") return "badge-medium";
+      if (level.difficulty === "hard") return "badge-hard";
+      return "";
+    }
+
+    function renderLevelsList() {
+      const listEl = document.getElementById("levelsList");
+      if (!listEl) return;
+      listEl.innerHTML = "";
+
+      levels.forEach((level, index) => {
+        const li = document.createElement("li");
+        const dot = document.createElement("div");
+        dot.classList.add("level-dot");
+        const label = document.createElement("div");
+        label.classList.add("level-label");
+
+        if (completedLevelIds.has(level.id)) {
+          dot.classList.add("done");
+        } else if (index === currentLevelIndex) {
+          dot.classList.add("current");
+        }
+
+        label.textContent = `${level.title}`;
+        const badge = document.createElement("span");
+        badge.className = difficultyTagClass(level);
+        badge.textContent = difficultyTagText(level);
+
+        li.appendChild(dot);
+        li.appendChild(label);
+        li.appendChild(badge);
+
+        // Allow clicking to revisit earlier levels
+        li.style.cursor = "pointer";
+        li.addEventListener("click", () => {
+          currentLevelIndex = index;
+          attemptsOnLevel = 0;
+          loadCurrentLevel();
+        });
+
+        listEl.appendChild(li);
+      });
+    }
+
+    function loadCurrentLevel() {
+      const level = levels[currentLevelIndex];
+
+      const titleEl = document.getElementById("levelTitle");
+      const descEl = document.getElementById("levelDescription");
+      const diffTagEl = document.getElementById("levelDifficultyTag");
+      const ioBody = document.getElementById("ioTableBody");
+      const ruleGuess = document.getElementById("ruleGuess");
+      const ruleFeedback = document.getElementById("ruleFeedback");
+      const attemptsText = document.getElementById("attemptsText");
+      const hintText = document.getElementById("hintText");
+      const progressBadge = document.getElementById("arcadeProgressBadge");
+      const nextButton = document.getElementById("nextLevelButton");
+
+      if (
+        !titleEl ||
+        !descEl ||
+        !diffTagEl ||
+        !ioBody ||
+        !ruleGuess ||
+        !ruleFeedback ||
+        !attemptsText ||
+        !hintText ||
+        !progressBadge ||
+        !nextButton
+      ) {
+        return;
+      }
+
+      titleEl.textContent = level.title;
+      descEl.textContent = level.description;
+      diffTagEl.textContent = difficultyTagText(level);
+
+      // Clear and rebuild IO table
+      ioBody.innerHTML = "";
+      level.examples.forEach((ex) => {
+        const tr = document.createElement("tr");
+        const tdX = document.createElement("td");
+        const tdY = document.createElement("td");
+        tdX.textContent = ex.x;
+        tdY.textContent = ex.y;
+        tr.appendChild(tdX);
+        tr.appendChild(tdY);
+        ioBody.appendChild(tr);
+      });
+
+      ruleGuess.value = "";
+      ruleFeedback.classList.remove("error");
+      ruleFeedback.textContent =
+        "Study the table, then type a rule using x and click Check Rule.";
+
+      attemptsOnLevel = 0;
+      attemptsText.textContent = "Attempts on this level: 0";
+      hintText.textContent = "Hint: focus on one example. What happens to x to get f(x)?";
+
+      progressBadge.textContent = `Level ${currentLevelIndex + 1} of ${levels.length}`;
+
+      // Next button only enabled if this level is completed OR it's not the last level
+      if (currentLevelIndex < levels.length - 1) {
+        nextButton.disabled = !completedLevelIds.has(level.id);
+      } else {
+        // Last level
+        nextButton.disabled = true;
+      }
+
+      renderLevelsList();
+    }
+
+    function checkRule() {
+      const level = levels[currentLevelIndex];
+      const ruleGuessInput = document.getElementById("ruleGuess");
+      const feedbackEl = document.getElementById("ruleFeedback");
+      const attemptsText = document.getElementById("attemptsText");
+      const nextButton = document.getElementById("nextLevelButton");
+
+      if (!ruleGuessInput || !feedbackEl || !attemptsText || !nextButton) return;
+
+      const guessExpr = ruleGuessInput.value.trim();
+      if (!guessExpr) {
+        feedbackEl.classList.add("error");
+        feedbackEl.textContent = "Please type a rule using x, like 2*x + 3 or x - 4.";
+        return;
+      }
+
+      attemptsOnLevel++;
+      attemptsText.textContent = "Attempts on this level: " + attemptsOnLevel;
+
+      try {
+        // Compare user rule with the answer rule using several test values (including examples)
+        const testXs = level.examples.map((ex) => ex.x).concat([-2, -1, 0, 1, 2]);
+        let allMatch = true;
+
+        for (const x of testXs) {
+          const expected = evalRuleExpression(level.answerRule, x);
+          const got = evalRuleExpression(guessExpr, x);
+
+          if (expected !== got) {
+            allMatch = false;
+            break;
+          }
+        }
+
+        if (allMatch) {
+          feedbackEl.classList.remove("error");
+          feedbackEl.textContent =
+            "✅ Nice! Your rule works for all the test values. You beat this level.";
+          completedLevelIds.add(level.id);
+          saveProgress();
+          renderLevelsList();
+
+          if (currentLevelIndex < levels.length - 1) {
+            nextButton.disabled = false;
+          } else {
+            nextButton.disabled = true;
+          }
+        } else {
+          feedbackEl.classList.add("error");
+          feedbackEl.textContent =
+            "Not quite. That rule doesn't match all the examples. Check one example at a time and try again.";
+        }
+      } catch (err) {
+        feedbackEl.classList.add("error");
+        feedbackEl.textContent =
+          "I couldn't understand that rule. Try something like 2*x + 3 or x/2 - 1.";
+      }
+    }
+
+    function showHint() {
+      const level = levels[currentLevelIndex];
+      const hintText = document.getElementById("hintText");
+      if (!hintText) return;
+      hintText.textContent = "Hint: " + level.hint;
+    }
+
+    function goToNextLevel() {
+      if (currentLevelIndex < levels.length - 1) {
+        currentLevelIndex++;
+        attemptsOnLevel = 0;
+        loadCurrentLevel();
+      }
+    }
+
+    function resetLevel() {
+      attemptsOnLevel = 0;
+      const attemptsText = document.getElementById("attemptsText");
+      const feedbackEl = document.getElementById("ruleFeedback");
+      const ruleGuess = document.getElementById("ruleGuess");
+      const hintText = document.getElementById("hintText");
+      const level = levels[currentLevelIndex];
+      const nextButton = document.getElementById("nextLevelButton");
+
+      if (
+        !attemptsText ||
+        !feedbackEl ||
+        !ruleGuess ||
+        !hintText ||
+        !nextButton
+      ) {
+        return;
+      }
+
+      attemptsText.textContent = "Attempts on this level: 0";
+      feedbackEl.classList.remove("error");
+      feedbackEl.textContent =
+        "Study the table, then type a rule using x and click Check Rule.";
+      ruleGuess.value = "";
+      hintText.textContent = "Hint: focus on one example. What happens to x to get f(x)?";
+
+      // Don't clear completion; this just lets Teddy try again
+      if (currentLevelIndex < levels.length - 1) {
+        nextButton.disabled = !completedLevelIds.has(level.id);
+      } else {
+        nextButton.disabled = true;
+      }
+    }
+
+    (function initArcade() {
+      const checkBtn = document.getElementById("checkRuleButton");
+      const hintBtn = document.getElementById("showHintButton");
+      const nextBtn = document.getElementById("nextLevelButton");
+      const resetBtn = document.getElementById("resetLevelButton");
+
+      if (checkBtn) checkBtn.addEventListener("click", checkRule);
+      if (hintBtn) hintBtn.addEventListener("click", showHint);
+      if (nextBtn) nextBtn.addEventListener("click", goToNextLevel);
+      if (resetBtn) resetBtn.addEventListener("click", resetLevel);
+
+      loadCurrentLevel();
+    })();
+  </script>
+</body>
+</html>
