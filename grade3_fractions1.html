@@ -325,55 +325,64 @@
   <script>
     // Helper: update fraction visuals
     function updateFractionVisuals() {
-      const numInput = document.getElementById("numInput");
-      const denInput = document.getElementById("denInput");
-      const bar = document.getElementById("fractionBar");
-      const textBox = document.getElementById("fractionTextBox");
-      const circleText = document.getElementById("fractionCircleText");
+  const numInput = document.getElementById("numInput");
+  const denInput = document.getElementById("denInput");
+  const bar = document.getElementById("fractionBar");
+  const textBox = document.getElementById("fractionTextBox");
+  const circleText = document.getElementById("fractionCircleText");
+  const circle = document.getElementById("fractionCircle");
 
-      if (!numInput || !denInput || !bar || !textBox || !circleText) return;
+  if (!numInput || !denInput || !bar || !textBox || !circleText || !circle) return;
 
-      const num = Number(numInput.value);
-      const den = Number(denInput.value);
+  const num = Number(numInput.value);
+  const den = Number(denInput.value);
 
-      if (!Number.isFinite(num) || !Number.isFinite(den) || den <= 0) {
-        textBox.classList.add("error");
-        textBox.textContent = "Please choose a numerator and a denominator greater than 0.";
-        return;
-      }
+  if (!Number.isFinite(num) || !Number.isFinite(den) || den <= 0) {
+    textBox.classList.add("error");
+    textBox.textContent = "Please choose a numerator and a denominator greater than 0.";
+    circle.style.background = "conic-gradient(#f3f4f6 0deg 360deg)";
+    circleText.textContent = "";
+    return;
+  }
 
-      // Clear the bar
-      bar.innerHTML = "";
+  // Clear the bar
+  bar.innerHTML = "";
 
-      for (let i = 0; i < den; i++) {
-        const piece = document.createElement("div");
-        piece.classList.add("fraction-piece");
-        if (i < num) {
-          piece.classList.add("fraction-piece-filled");
-        } else {
-          piece.classList.add("fraction-piece-empty");
-        }
-        bar.appendChild(piece);
-      }
-
-      const fracText = num + "/" + den;
-      circleText.textContent = fracText;
-
-      let explanation = "You chose the fraction " + fracText + ".\n";
-      explanation += "The denominator " + den + " means the whole is cut into " + den + " equal parts.\n";
-      explanation += "The numerator " + num + " means you have " + num + " of those parts.";
-
-      if (num === 0) {
-        explanation += "\nThat means you have 0 parts. You have none of the whole.";
-      } else if (num === den) {
-        explanation += "\nThat means you have all the parts: the whole thing!";
-      } else if (num > den) {
-        explanation += "\nBecause the numerator is bigger than the denominator, this fraction is greater than 1 (more than a whole).";
-      }
-
-      textBox.classList.remove("error");
-      textBox.textContent = explanation;
+  for (let i = 0; i < den; i++) {
+    const piece = document.createElement("div");
+    piece.classList.add("fraction-piece");
+    if (i < num) {
+      piece.classList.add("fraction-piece-filled");
+    } else {
+      piece.classList.add("fraction-piece-empty");
     }
+    bar.appendChild(piece);
+  }
+
+  const fracText = num + "/" + den;
+  circleText.textContent = fracText;
+
+  // Update circle fill: fraction of the circle filled in blue
+  const fraction = den === 0 ? 0 : num / den;
+  const clamped = Math.max(0, Math.min(fraction, 1)); // clamp between 0 and 1
+  const angle = clamped * 360;
+  circle.style.background = `conic-gradient(#60a5fa 0deg ${angle}deg, #f3f4f6 ${angle}deg 360deg)`;
+
+  let explanation = "You chose the fraction " + fracText + ".\n";
+  explanation += "The denominator " + den + " means the whole is cut into " + den + " equal parts.\n";
+  explanation += "The numerator " + num + " means you have " + num + " of those parts.";
+
+  if (num === 0) {
+    explanation += "\nThat means you have 0 parts. You have none of the whole.";
+  } else if (num === den) {
+    explanation += "\nThat means you have all the parts: the whole thing!";
+  } else if (num > den) {
+    explanation += "\nBecause the numerator is bigger than the denominator, this fraction is greater than 1 (more than a whole).";
+  }
+
+  textBox.classList.remove("error");
+  textBox.textContent = explanation;
+}
 
     // Bigger fraction quiz
     function checkBiggerQuiz() {
