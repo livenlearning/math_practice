@@ -1,25 +1,363 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Lesson 2 – Test Page</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <title>Intro to Algebra – Lesson 2: Writing Expressions</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="page">
     <header style="margin-bottom: 18px;">
       <a href="index.html">&larr; Back to Home</a>
-      <h1>Lesson 2 – Test Page</h1>
-      <p class="subtitle">This is just a placeholder to make sure the link works.</p>
+      <h1>Intro to Algebra – Lesson 2</h1>
+      <p class="subtitle">
+        <strong>Writing and Evaluating Expressions</strong> – Turning word rules into algebra.
+      </p>
     </header>
 
+    <!-- 1. Big Idea -->
     <section class="card">
       <div class="card-header">
-        <h2 style="margin:0;">Test Content</h2>
-        <span class="tag">Check</span>
+        <h2 style="margin: 0;">1. Big Idea</h2>
+        <span class="tag">Concept</span>
       </div>
-      <p>If you can see this page, the Lesson 2 link is working.</p>
+      <p>
+        In Lesson 1, you learned that a <strong>variable</strong> (like <code>x</code>) is a number that can change.
+        Now you’ll learn how to write <strong>expressions</strong> – algebra rules that tell you what to do with that number.
+      </p>
+      <p>
+        An <strong>expression</strong> might look like <code>3x + 4</code>. It means:
+      </p>
+      <ul style="margin-top: 4px;">
+        <li>Take your number <code>x</code></li>
+        <li>Triple it (<code>3x</code>)</li>
+        <li>Then add 4</li>
+      </ul>
+      <p class="mini-note">
+        Expressions have numbers, variables, and operations. They <em>do not</em> have an equals sign.
+      </p>
+    </section>
+
+    <!-- 2. Match the Rule to the Expression -->
+    <section class="card">
+      <div class="card-header">
+        <h2 style="margin: 0;">2. Match the Rule to the Expression</h2>
+        <span class="tag">Interactive</span>
+      </div>
+      <p>
+        Read each word rule. Choose the expression that matches it.
+      </p>
+
+      <div style="margin-bottom: 10px;">
+        <p><strong>1.</strong> “Double a number and then add 3.”</p>
+        <div class="form-row">
+          <label for="match1">Choose expression:</label>
+          <select id="match1">
+            <option value="">-- choose --</option>
+            <option value="2*x + 3">2x + 3</option>
+            <option value="x + 3*2">x + 3·2</option>
+            <option value="2 + x + 3">2 + x + 3</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 10px;">
+        <p><strong>2.</strong> “Triple a number and subtract 5.”</p>
+        <div class="form-row">
+          <label for="match2">Choose expression:</label>
+          <select id="match2">
+            <option value="">-- choose --</option>
+            <option value="3*x - 5">3x - 5</option>
+            <option value="x - 3*5">x - 3·5</option>
+            <option value="5*x - 3">5x - 3</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 10px;">
+        <p><strong>3.</strong> “Take a number, divide it by 2, then add 7.”</p>
+        <div class="form-row">
+          <label for="match3">Choose expression:</label>
+          <select id="match3">
+            <option value="">-- choose --</option>
+            <option value="x/2 + 7">x/2 + 7</option>
+            <option value="(x + 7)/2">(x + 7)/2</option>
+            <option value="2*x + 7">2x + 7</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 10px;">
+        <p><strong>4.</strong> “Square a number, then add 1.”</p>
+        <div class="form-row">
+          <label for="match4">Choose expression:</label>
+          <select id="match4">
+            <option value="">-- choose --</option>
+            <option value="x**2 + 1">x² + 1</option>
+            <option value="(x + 1)**2">(x + 1)²</option>
+            <option value="x**2 - 1">x² - 1</option>
+          </select>
+        </div>
+      </div>
+
+      <button id="checkMatchesButton">Check Answers</button>
+      <div id="matchFeedback" class="output-box" style="margin-top: 8px;">
+        Choose expressions for each rule, then click <strong>Check Answers</strong>.
+      </div>
+    </section>
+
+    <!-- 3. Build Your Own Expression -->
+    <section class="card">
+      <div class="card-header">
+        <h2 style="margin: 0;">3. Build Your Own Expression</h2>
+        <span class="tag">Interactive</span>
+      </div>
+      <p>
+        Use the dropdowns to build a word rule. The app will show you the matching expression.
+      </p>
+
+      <div class="form-row">
+        <label for="builderMultiplier">Step 1:</label>
+        <select id="builderMultiplier">
+          <option value="1">Just the number</option>
+          <option value="2">Double the number</option>
+          <option value="3">Triple the number</option>
+          <option value="4">Quadruple the number</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label for="builderOperation">Step 2:</label>
+        <select id="builderOperation">
+          <option value="+">then add</option>
+          <option value="-">then subtract</option>
+        </select>
+
+        <label for="builderConstant">value:</label>
+        <input type="number" id="builderConstant" value="5" />
+      </div>
+
+      <div id="builderWords" class="output-box" style="margin-top: 8px;">
+        Word rule will appear here.
+      </div>
+      <div id="builderExpression" class="output-box" style="margin-top: 6px;">
+        Expression will appear here.
+      </div>
+
+      <p class="mini-note">
+        Try changing the multiplier, operation, and number. Watch how the word rule and expression change together.
+      </p>
+    </section>
+
+    <!-- 4. Evaluate Expressions -->
+    <section class="card">
+      <div class="card-header">
+        <h2 style="margin: 0;">4. Evaluate Expressions</h2>
+        <span class="tag">Interactive</span>
+      </div>
+      <p>
+        Pick an expression and a value for <code>x</code>, then see what the result is. This is called
+        <strong>evaluating</strong> an expression.
+      </p>
+
+      <div class="form-row">
+        <label for="evalExpression"><strong>Expression:</strong></label>
+        <input
+          type="text"
+          id="evalExpression"
+          value="2*x + 3"
+          aria-label="Expression to evaluate"
+        />
+      </div>
+      <p class="mini-note">
+        Use <code>x</code> in your expression, like <code>2*x + 3</code>, <code>x**2 + 1</code>, or
+        <code>4*x - 1</code>.
+      </p>
+
+      <div class="form-row">
+        <label for="evalX"><strong>x =</strong></label>
+        <input type="number" id="evalX" value="0" step="1" />
+        <button id="evalButton">Evaluate</button>
+        <button id="evalAddRow" class="secondary">Add to Table</button>
+      </div>
+
+      <div id="evalOutput" class="output-box" style="margin-top: 8px;">
+        Type an expression and choose x, then click <strong>Evaluate</strong>.
+      </div>
+
+      <h3 style="margin-top: 16px;">Table of Values</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>x</th>
+            <th>Expression</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody id="evalTableBody">
+          <!-- rows added by JS -->
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 5. Reflection -->
+    <section class="card">
+      <div class="card-header">
+        <h2 style="margin: 0;">5. Reflection</h2>
+        <span class="tag">Think</span>
+      </div>
+      <p>Talk or write about these questions:</p>
+      <ol style="margin-top: 6px;">
+        <li>How do you turn a sentence like “double a number and add 3” into an expression?</li>
+        <li>What does it mean to “evaluate” an expression?</li>
+        <li>Did any of the word rules trick you at first? Why?</li>
+      </ol>
     </section>
   </div>
+
+  <script>
+    // Helper to evaluate expressions in x
+    function evaluateExpression(expr, x) {
+      const forbidden = /[;{}[\]]/;
+      if (forbidden.test(expr)) {
+        throw new Error("Please use only math operations with x.");
+      }
+      const fn = new Function("x", "return " + expr + ";");
+      return fn(x);
+    }
+
+    // Match the Rule to the Expression
+    const matchAnswers = {
+      match1: "2*x + 3",
+      match2: "3*x - 5",
+      match3: "x/2 + 7",
+      match4: "x**2 + 1"
+    };
+
+    document.getElementById("checkMatchesButton").addEventListener("click", function () {
+      const ids = ["match1", "match2", "match3", "match4"];
+      let correctCount = 0;
+      let feedbackLines = [];
+
+      ids.forEach(function (id, index) {
+        const sel = document.getElementById(id);
+        const value = sel.value;
+        const isCorrect = value === matchAnswers[id];
+        if (isCorrect) {
+          correctCount++;
+          feedbackLines.push("Question " + (index + 1) + ": ✅ Correct");
+        } else if (value === "") {
+          feedbackLines.push("Question " + (index + 1) + ": (no answer chosen)");
+        } else {
+          feedbackLines.push("Question " + (index + 1) + ": ❌ Not quite");
+        }
+      });
+
+      const fb = document.getElementById("matchFeedback");
+      fb.classList.remove("error");
+      fb.textContent =
+        "You got " + correctCount + " out of 4 correct.\n\n" +
+        feedbackLines.join("\n") +
+        "\n\nRemember to read the word rule carefully: order matters!";
+    });
+
+    // Expression Builder
+    const builderMultiplier = document.getElementById("builderMultiplier");
+    const builderOperation = document.getElementById("builderOperation");
+    const builderConstant = document.getElementById("builderConstant");
+    const builderWords = document.getElementById("builderWords");
+    const builderExpression = document.getElementById("builderExpression");
+
+    function updateBuilder() {
+      const mult = Number(builderMultiplier.value);
+      const op = builderOperation.value;
+      const c = Number(builderConstant.value);
+
+      let multText = "";
+      let exprPart = "";
+
+      if (mult === 1) {
+        multText = "Take a number";
+        exprPart = "x";
+      } else if (mult === 2) {
+        multText = "Double the number";
+        exprPart = "2*x";
+      } else if (mult === 3) {
+        multText = "Triple the number";
+        exprPart = "3*x";
+      } else if (mult === 4) {
+        multText = "Quadruple the number";
+        exprPart = "4*x";
+      }
+
+      const opText = (op === "+") ? "then add " : "then subtract ";
+      const wordRule = multText + ", " + opText + c + ".";
+      const expression = exprPart + " " + op + " " + c;
+
+      builderWords.textContent = "Word rule: " + wordRule;
+      builderExpression.textContent = "Expression: " + expression;
+    }
+
+    builderMultiplier.addEventListener("change", updateBuilder);
+    builderOperation.addEventListener("change", updateBuilder);
+    builderConstant.addEventListener("input", updateBuilder);
+
+    updateBuilder(); // initialize
+
+    // Expression Evaluator
+    const evalExpressionInput = document.getElementById("evalExpression");
+    const evalXInput = document.getElementById("evalX");
+    const evalButton = document.getElementById("evalButton");
+    const evalAddRowButton = document.getElementById("evalAddRow");
+    const evalOutput = document.getElementById("evalOutput");
+    const evalTableBody = document.getElementById("evalTableBody");
+
+    function evaluateCurrentExpression(addRow) {
+      const expr = evalExpressionInput.value.trim();
+      const xVal = Number(evalXInput.value);
+
+      if (!expr) {
+        evalOutput.classList.add("error");
+        evalOutput.textContent = "Please enter an expression using x, like 2*x + 3.";
+        return;
+      }
+
+      try {
+        const result = evaluateExpression(expr, xVal);
+        const substituted = expr.replace(/x/g, "(" + xVal + ")");
+        evalOutput.classList.remove("error");
+        evalOutput.textContent =
+          "Expression: " + expr + "\n" +
+          "Substitute x = " + xVal + " → " + substituted + "\n" +
+          "Result: " + result;
+
+        if (addRow) {
+          const row = document.createElement("tr");
+          const tdX = document.createElement("td");
+          const tdExpr = document.createElement("td");
+          const tdVal = document.createElement("td");
+          tdX.textContent = xVal;
+          tdExpr.textContent = expr;
+          tdVal.textContent = result;
+          row.appendChild(tdX);
+          row.appendChild(tdExpr);
+          row.appendChild(tdVal);
+          evalTableBody.appendChild(row);
+        }
+      } catch (err) {
+        evalOutput.classList.add("error");
+        evalOutput.textContent =
+          "I couldn't understand that expression.\nTry something like 2*x + 3 or x**2 + 1.";
+      }
+    }
+
+    evalButton.addEventListener("click", function () {
+      evaluateCurrentExpression(false);
+    });
+
+    evalAddRowButton.addEventListener("click", function () {
+      evaluateCurrentExpression(true);
+    });
+  </script>
 </body>
 </html>
