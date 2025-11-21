@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Algebra Avoider Lab – Tuning the Rules</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .lab-layout {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 10px;
+    }
+
+    .lab-controls {
+      flex: 1 1 260px;
+    }
+
+    .lab-game {
+      flex: 1.5 1 260px;
+    }
+
+    .game-canvas-wrapper {
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      padding: 8px;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      max-width: 480px;
+      height: 300px;
+      border-radius: 8px;
+      background: #0f172a;
+    }
+
+    .code-input-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .code-input {
+      width: 100%;
+      box-sizing: border-box;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+
+    .stat-line {
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+    }
+
+    .mini-pill {
+      font-size: 0.75rem;
+      padding: 1px 6px;
+      border-radius: 999px;
+      background: #e0f2fe;
+      color: #0369a1;
+      margin-left: 4px;
+    }
+
+    @media (max-width: 640px) {
+      .lab-layout {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header style="margin-bottom: 18px;">
+      <a href="index.html">&larr; Back to Home</a>
+      <h1>Algebra Avoider Lab</h1>
+      <p class="subtitle">
+        Edit the algebra rules that control the game, then restart and see how it feels. You’re tuning a game using
+        algebra.
+      </p>
+    </header>
+
+    <section class="card">
+      <div class="card-header">
+        <h2 style="margin: 0;">1. Edit the Rules</h2>
+        <span class="tag">Algebra &rarr; Game</span>
+      </div>
+      <p>
+        These rules are written in code, but they’re just algebra expressions in terms of <code>level</code>.
+        Change the expressions, click <strong>Apply rules &amp; restart</strong>, then play the game on the right.
+      </p>
+
+      <div class="lab-layout">
+        <!-- Controls -->
+        <div class="lab-controls">
+          <div class="form-row">
+            <div class="code-input-label">
+              Enemy speed rule (per enemy)
+              <span class="mini-pill">speed(level)</span>
+            </div>
+            <p class="mini-note">
+              Example: <code>2 + 0.3 * level</code> means “start at 2, then add 0.3 times the level.”
+            </p>
+            <input
+              type="text"
+              id="enemyExprInput"
+              class="code-input"
+              value="2 + 0.3 * level"
+            />
+          </div>
+
+          <div class="form-row">
+            <div class="code-input-label">
+              Spawn interval rule (frames between enemies)
+              <span class="mini-pill">interval(level)</span>
+            </div>
+            <p class="mini-note">
+              Example: <code>120 - 5 * level</code> means “start at 120 frames, then subtract 5 each level.”
+              Smaller interval = more enemies.
+            </p>
+            <input
+              type="text"
+              id="spawnExprInput"
+              class="code-input"
+              value="120 - 5 * level"
+            />
+          </div>
+
+          <div class="form-row">
+            <div class="code-input-label">
+              Score gain rule (per frame)
+              <span class="mini-pill">scoreStep(level)</span>
+            </div>
+            <p class="mini-note">
+              Example: <code>1 * level</code> means “gain more points on higher levels.”
+            </p>
+            <input
+              type="text"
+              id="scoreExprInput"
+              class="code-input"
+              value="1 * level"
+            />
+          </div>
+
+          <div class="form-row" style="margin-top: 8px;">
+            <button id="applyRulesButton">Apply rules &amp; restart</button>
+            <button id="resetDefaultsButton" class="secondary">Reset to defaults</button>
+          </div>
+
+          <div id="rulesFeedback" class="output-box" style="margin-top: 8px;">
+            Edit the expressions, then click <strong>Apply rules &amp; restart</strong>. If there’s an error,
+            you’ll see a message here.
+          </div>
+
+          <p class="mini-note" style="margin-top: 10px;">
+            You can use <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code> and numbers, with the variable
+            <code>level</code>. The game will test your rule for several levels (like level 1, 3, and 5) before using it.
+          </p>
+        </div>
+
+        <!-- Game -->
+        <div class="lab-game">
+          <div class="game-canvas-wrapper">
+            <canvas id="gameCanvas" width="480" height="300"></canvas>
+          </div>
+          <p class="mini-note">
+            Use the <strong>left</strong> and <strong>right</strong> arrow keys to move the blue player.
+            Avoid the red squares. Survive longer for more points.
+          </p>
+          <div class="stat-line"><strong>Score:</strong> <span id="scoreDisplay">0</span></div>
+          <div class="stat-line"><strong>Level:</strong> <span id="levelDisplay">1</span></div>
+          <div class="stat-line"><strong>State:</strong> <span id="stateDisplay">Running</span></div>
+          <button id="restartButton" style="margin-top: 6px;">Restart Game</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <h2 style="margin: 0;">2. How to Read These Rules</h2>
+        <span class="tag">Connect to Algebra</span>
+      </div>
+      <p>
+        Each rule is a function of <code>level</code>. For example:
+      </p>
+      <ul>
+        <li><code>speed(level) = 2 + 0.3 * level</code> &rarr; Faster enemies on higher levels.</li>
+        <li><code>interval(level) = 120 - 5 * level</code> &rarr; Enemies appear more often on higher levels.</li>
+        <li><code>scoreStep(level) = 1 * level</code> &rarr; You earn more points each frame on higher levels.</li>
+      </ul>
+      <p>
+        Try changing the numbers and then tell Dad (or write down) what the new rule is in words, like:
+        “Enemy speed equals 1 plus 0.5 times the level.”
+      </p>
+    </section>
+  </div>
+
+  <script>
+    // --- Expression handling for Teddy's rules ---------------------------------
+
+    let enemySpeedExpr = "2 + 0.3 * level";
+    let spawnIntervalExpr = "120 - 5 * level";
+    let scoreExpr = "1 * level";
+
+    function evalLevelExpr(expr, level) {
+      const forbidden = /[;{}[\]]/;
+      if (forbidden.test(expr)) {
+        throw new Error("Please use only math operations with level.");
+      }
+      const fn = new Function("level", "return " + expr + ";");
+      return fn(level);
+    }
+
+    function testExpr(expr, name) {
+      const testLevels = [1, 3, 5];
+      for (const lv of testLevels) {
+        const value = evalLevelExpr(expr, lv);
+        if (!Number.isFinite(value)) {
+          throw new Error("The " + name + " rule gave a non-number at level " + lv + ".");
+        }
+      }
+    }
+
+    // --- Game code -------------------------------------------------------------
+
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    const scoreDisplay = document.getElementById("scoreDisplay");
+    const levelDisplay = document.getElementById("levelDisplay");
+    const stateDisplay = document.getElementById("stateDisplay");
+    const restartButton = document.getElementById("restartButton");
+
+    const WIDTH = canvas.width;
+    const HEIGHT = canvas.height;
+
+    const player = {
+      x: WIDTH / 2,
+      y: HEIGHT - 30,
+      width: 30,
+      height: 14,
+      vx: 0,
+      maxSpeed: 4
+    };
+
+    let enemies = [];
+    let frameCount = 0;
+    let score = 0;
+    let level = 1;
+    let gameOver = false;
+    let keys = {
+      left: false,
+      right: false
+    };
+
+    function getEnemySpeedForLevel(level) {
+      try {
+        const v = evalLevelExpr(enemySpeedExpr, level);
+        if (!Number.isFinite(v)) throw new Error();
+        return v;
+      } catch (e) {
+        return 2 + 0.3 * level; // fallback
+      }
+    }
+
+    function getSpawnIntervalForLevel(level) {
+      try {
+        let v = evalLevelExpr(spawnIntervalExpr, level);
+        if (!Number.isFinite(v)) throw new Error();
+        v = Math.max(20, v); // minimum spacing
+        return v;
+      } catch (e) {
+        return Math.max(20, 120 - 5 * level); // fallback
+      }
+    }
+
+    function getScoreStepForLevel(level) {
+      try {
+        const v = evalLevelExpr(scoreExpr, level);
+        if (!Number.isFinite(v)) throw new Error();
+        return v;
+      } catch (e) {
+        return 1 * level; // fallback
+      }
+    }
+
+    function resetGame() {
+      player.x = WIDTH / 2;
+      player.vx = 0;
+      enemies = [];
+      frameCount = 0;
+      score = 0;
+      level = 1;
+      gameOver = false;
+      updateHUD();
+    }
+
+    function updateHUD() {
+      scoreDisplay.textContent = Math.floor(score);
+      levelDisplay.textContent = level;
+      stateDisplay.textContent = gameOver ? "Game Over" : "Running";
+    }
+
+    function spawnEnemy() {
+      const speed = getEnemySpeedForLevel(level);
+      const enemy = {
+        x: Math.random() * (WIDTH - 20),
+        y: -20,
+        size: 18,
+        speed: speed
+      };
+      enemies.push(enemy);
+    }
+
+    function updateLevel() {
+      // Level is based on score; you could also change this rule if you want.
+      level = 1 + Math.floor(score / 150);
+    }
+
+    function updatePlayer() {
+      if (keys.left) {
+        player.vx = -player.maxSpeed;
+      } else if (keys.right) {
+        player.vx = player.maxSpeed;
+      } else {
+        player.vx = 0;
+      }
+      player.x = player.x + player.vx;
+      if (player.x < 0) player.x = 0;
+      if (player.x + player.width > WIDTH) player.x = WIDTH - player.width;
+    }
+
+    function updateEnemies() {
+      enemies.forEach((enemy) => {
+        enemy.y = enemy.y + enemy.speed;
+      });
+      enemies = enemies.filter((enemy) => enemy.y < HEIGHT + enemy.size);
+    }
+
+    function checkCollisions() {
+      for (const enemy of enemies) {
+        if (
+          enemy.x < player.x + player.width &&
+          enemy.x + enemy.size > player.x &&
+          enemy.y < player.y + player.height &&
+          enemy.y + enemy.size > player.y
+        ) {
+          gameOver = true;
+          updateHUD();
+          break;
+        }
+      }
+    }
+
+    function updateScore() {
+      if (gameOver) return;
+      const step = getScoreStepForLevel(level);
+      score += step;
+    }
+
+    function drawPlayer() {
+      ctx.fillStyle = "#38bdf8";
+      ctx.fillRect(player.x, player.y, player.width, player.height);
+    }
+
+    function drawEnemies() {
+      ctx.fillStyle = "#f97373";
+      enemies.forEach((enemy) => {
+        ctx.fillRect(enemy.x, enemy.y, enemy.size, enemy.size);
+      });
+    }
+
+    function drawBackground() {
+      ctx.fillStyle = "#020617";
+      ctx.fillRect(0, 0, WIDTH, HEIGHT);
+      ctx.strokeStyle = "#1e293b";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, HEIGHT - 40);
+      ctx.lineTo(WIDTH, HEIGHT - 40);
+      ctx.stroke();
+    }
+
+    function gameLoop() {
+      ctx.clearRect(0, 0, WIDTH, HEIGHT);
+      drawBackground();
+
+      if (!gameOver) {
+        frameCount++;
+        updatePlayer();
+        updateEnemies();
+        checkCollisions();
+        updateScore();
+        updateLevel();
+
+        const spawnInterval = getSpawnIntervalForLevel(level);
+        if (frameCount % Math.round(spawnInterval) === 0) {
+          spawnEnemy();
+        }
+      }
+
+      drawEnemies();
+      drawPlayer();
+      updateHUD();
+
+      requestAnimationFrame(gameLoop);
+    }
+
+    // Keyboard controls
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") keys.left = true;
+      if (e.key === "ArrowRight") keys.right = true;
+    });
+
+    window.addEventListener("keyup", (e) => {
+      if (e.key === "ArrowLeft") keys.left = false;
+      if (e.key === "ArrowRight") keys.right = false;
+    });
+
+    restartButton.addEventListener("click", () => {
+      resetGame();
+    });
+
+    // --- Wiring up the rule editor --------------------------------------------
+
+    const enemyExprInput = document.getElementById("enemyExprInput");
+    const spawnExprInput = document.getElementById("spawnExprInput");
+    const scoreExprInput = document.getElementById("scoreExprInput");
+    const applyRulesButton = document.getElementById("applyRulesButton");
+    const resetDefaultsButton = document.getElementById("resetDefaultsButton");
+    const rulesFeedback = document.getElementById("rulesFeedback");
+
+    function applyNewRules() {
+      const enemyExpr = enemyExprInput.value.trim();
+      const spawnExpr = spawnExprInput.value.trim();
+      const scoreExprVal = scoreExprInput.value.trim();
+
+      if (!enemyExpr || !spawnExpr || !scoreExprVal) {
+        rulesFeedback.classList.add("error");
+        rulesFeedback.textContent = "Please fill in all three rules before applying.";
+        return;
+      }
+
+      try {
+        testExpr(enemyExpr, "enemy speed");
+        testExpr(spawnExpr, "spawn interval");
+        testExpr(scoreExprVal, "score step");
+
+        enemySpeedExpr = enemyExpr;
+        spawnIntervalExpr = spawnExpr;
+        scoreExpr = scoreExprVal;
+
+        rulesFeedback.classList.remove("error");
+        rulesFeedback.textContent =
+          "Rules updated! The game has been restarted with your new algebra.";
+        resetGame();
+      } catch (err) {
+        rulesFeedback.classList.add("error");
+        rulesFeedback.textContent = err.message || "There was a problem with one of your rules.";
+      }
+    }
+
+    function resetRulesToDefaults() {
+      enemySpeedExpr = "2 + 0.3 * level";
+      spawnIntervalExpr = "120 - 5 * level";
+      scoreExpr = "1 * level";
+
+      enemyExprInput.value = enemySpeedExpr;
+      spawnExprInput.value = spawnIntervalExpr;
+      scoreExprInput.value = scoreExpr;
+
+      rulesFeedback.classList.remove("error");
+      rulesFeedback.textContent =
+        "Rules reset to defaults. Try changing the numbers again to see what happens.";
+      resetGame();
+    }
+
+    applyRulesButton.addEventListener("click", applyNewRules);
+    resetDefaultsButton.addEventListener("click", resetRulesToDefaults);
+
+    // Start the game
+    resetGame();
+    gameLoop();
+  </script>
+</body>
+</html>
