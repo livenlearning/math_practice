@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Grade 3 – Fractions Lesson 1: What Fractions Mean</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* Page-specific styles for Ada's fractions lesson */
+
+    .fraction-layout {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 8px;
+    }
+
+    .fraction-controls {
+      flex: 1 1 200px;
+    }
+
+    .fraction-visuals {
+      flex: 1 1 220px;
+    }
+
+    .fraction-bar-container {
+      margin-top: 6px;
+    }
+
+    .fraction-bar-label {
+      font-size: 0.85rem;
+      color: #4b5563;
+      margin-bottom: 4px;
+    }
+
+    .fraction-bar {
+      display: flex;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #d1d5db;
+      height: 26px;
+      background: #f9fafb;
+    }
+
+    .fraction-piece {
+      flex: 1 1 0;
+      border-right: 1px solid #e5e7eb;
+      box-sizing: border-box;
+    }
+
+    .fraction-piece:last-child {
+      border-right: none;
+    }
+
+    .fraction-piece-filled {
+      background: linear-gradient(135deg, #bfdbfe, #60a5fa);
+    }
+
+    .fraction-piece-empty {
+      background: #f3f4f6;
+    }
+
+    .fraction-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 2px solid #d1d5db;
+      background: radial-gradient(circle at center, #e0f2fe 0, #e0f2fe 55%, #ffffff 56%, #ffffff 100%);
+      position: relative;
+      margin-top: 8px;
+      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.12);
+    }
+
+    .fraction-circle-text {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: #1f2933;
+      font-size: 0.95rem;
+    }
+
+    .bigger-quiz-item {
+      margin-bottom: 10px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+    }
+
+    .word-problem {
+      margin-bottom: 10px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+    }
+
+    .word-answer {
+      font-size: 0.9rem;
+      color: #374151;
+      margin-top: 4px;
+      display: none;
+    }
+
+    @media (max-width: 640px) {
+      .fraction-layout {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header style="margin-bottom: 18px;">
+      <a href="index.html">&larr; Back to Home</a>
+      <h1>Grade 3 Fractions – Lesson 1</h1>
+      <p class="subtitle">
+        <strong>What Fractions Mean:</strong> Understanding parts of a whole, and what the top and bottom numbers tell you.
+      </p>
+    </header>
+
+    <!-- 1. Big Idea -->
+    <section class="card">
+      <div class="card-header">
+        <h2 style="margin: 0;">1. Big Idea: Fractions Tell a Story</h2>
+        <span class="tag">Concept</span>
+      </div>
+      <p>
+        A fraction is a way to talk about <strong>equal parts</strong> of a whole.
+      </p>
+      <ul style="margin-top: 4px;">
+        <li>
+          The <strong>denominator</strong> (bottom number) tells how many <em>equal parts</em> the whole is cut into.
+        </li>
+        <li>
+          The <strong>numerator</strong> (top number) tells how many of those parts you have.
+        </li>
+      </ul>
+      <p>
+        Example: <strong>3/4</strong> means “3 out of 4 equal parts.”
+      </p>
+      <p class="mini-note">
+        Imagine a cookie, a pizza, or a game level bar at the bottom of a screen. Fractions tell how much you have out of the whole.
+      </p>
+    </section>
+
+    <!-- 2. Build and See a Fraction -->
+    <section class="card">
+      <div class="card-header">
+        <h2 style="margin: 0;">2. Build Your Own Fraction</h2>
+        <span class="tag">Interactive</span>
+      </div>
+      <p>
+        Choose a numerator (top number) and a denominator (bottom number). Then see what your fraction looks like.
+      </p>
+
+      <div class="fraction-layout">
+        <div class="fraction-controls">
+          <div class="form-row">
+            <label for="numInput"><strong>Numerator (top):</strong></label>
+            <input type="number" id="numInput" value="1" min="0" max="12" />
+          </div>
+          <div class="form-row">
+            <label for="denInput"><strong>Denominator (bottom):</strong></label>
+            <input type="number" id="denInput" value="4" min="1" max="12" />
+          </div>
+          <div class="form-row">
+            <button id="updateFractionButton">Update Fraction</button>
+          </div>
+          <div id="fractionTextBox" class="output-box" style="margin-top: 8px;">
+            Choose a numerator and denominator, then click <strong>Update Fraction</strong>.
+          </div>
+        </div>
+
+        <div class="fraction-visuals">
+          <div class="fraction-bar-container">
+            <div class="fraction-bar-label">Bar model:</div>
+            <div id="fractionBar" class="fraction-bar">
+              <!-- pieces added by JS -->
+            </div>
+          </div>
+          <div style="margin-top: 10px;">
+            <div class="fraction-bar-label">Circle model:</div>
+            <div class="fraction-circle">
+              <div id="fractionCircleText" class="fraction-circle-text">1/4</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="mini-note">
+        Try changing the denominator. What happens to the size of the pieces?
+      </p>
+    </section>
+
+    <!-- 3. Which Is Bigger? -->
+    <section class="card">
+      <div class="card-header">
+        <h2 style="margin: 0;">3. Which Fraction Is Bigger?</h2>
+        <span class="tag">Compare</span>
+      </div>
+      <p>
+        For each pair, decide which fraction is bigger. Think about which gives you more of the same-sized cookie!
+      </p>
+
+      <div class="bigger-quiz-item">
+        <p><strong>1.</strong> Which is bigger: 1/4 or 1/8?</p>
+        <div class="form-row">
+          <label for="bigger1">Choose:</label>
+          <select id="bigger1">
+            <option value="">-- choose --</option>
+            <option value="1/4">1/4</option>
+            <option value="1/8">1/8</option>
+            <option value="same">They are the same</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="bigger-quiz-item">
+        <p><strong>2.</strong> Which is bigger: 2/3 or 1/2?</p>
+        <div class="form-row">
+          <label for="bigger2">Choose:</label>
+          <select id="bigger2">
+            <option value="">-- choose --</option>
+            <option value="2/3">2/3</option>
+            <option value="1/2">1/2</option>
+            <option value="same">They are the same</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="bigger-quiz-item">
+        <p><strong>3.</strong> Which is bigger: 3/5 or 3/10?</p>
+        <div class="form-row">
+          <label for="bigger3">Choose:</label>
+          <select id="bigger3">
+            <option value="">-- choose --</option>
+            <option value="3/5">3/5</option>
+            <option value="3/10">3/10</option>
+            <option value="same">They are the same</option>
+          </select>
+        </div>
+      </div>
+
+      <button id="checkBiggerButton">Check Answers</button>
+      <div id="biggerFeedback" class="output-box" style="margin-top: 8px;">
+        Choose answers for each question, then click <strong>Check Answers</strong>.
+      </div>
+      <p class="mini-note">
+        Hint: If the pieces are the same size, having more pieces means a bigger fraction.
+        If the numerator is the same, having fewer, bigger pieces (smaller denominator) usually means more.
+      </p>
+    </section>
+
+    <!-- 4. Word Problems -->
+    <section class="card">
+      <div class="card-header">
+        <h2 style="margin: 0;">4. Word Problems</h2>
+        <span class="tag">Stories</span>
+      </div>
+      <p>
+        Read each story, think about the fractions, and decide who has more or how far someone went. Then check the answer.
+      </p>
+
+      <div class="word-problem">
+        <p><strong>1. Cookie Sharing</strong></p>
+        <p>
+          Teddy and Ada each have a cookie of the same size.
+          Teddy eats <strong>1/2</strong> of his cookie.
+          Ada eats <strong>1/3</strong> of her cookie.
+          Who ate more cookie?
+        </p>
+        <button class="secondary" data-answer-id="word1">Show Answer</button>
+        <div id="word1" class="word-answer">
+          Teddy ate more. Half of a cookie (1/2) is bigger than one third (1/3) of the same cookie.
+        </div>
+      </div>
+
+      <div class="word-problem">
+        <p><strong>2. Playground Loop</strong></p>
+        <p>
+          Ada runs <strong>1/3</strong> of the playground loop.
+          Teddy runs <strong>1/6</strong> of the same loop.
+          Who ran farther?
+        </p>
+        <button class="secondary" data-answer-id="word2">Show Answer</button>
+        <div id="word2" class="word-answer">
+          Ada ran farther. One third (1/3) of the loop is more than one sixth (1/6) of the same loop.
+        </div>
+      </div>
+
+      <div class="word-problem">
+        <p><strong>3. Pizza Party</strong></p>
+        <p>
+          There are 2 pizzas of the same size at a party.
+          One pizza is cut into 4 equal slices.
+          The other pizza is cut into 8 equal slices.
+          If you eat 2 slices from each pizza, from which pizza did you eat more?
+        </p>
+        <button class="secondary" data-answer-id="word3">Show Answer</button>
+        <div id="word3" class="word-answer">
+          You ate more from the pizza with 4 slices. 2 out of 4 slices is 2/4 = 1/2 of the pizza.
+          2 out of 8 slices is 2/8 = 1/4 of the pizza. Half is more than one fourth.
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Reflection -->
+    <section class="card">
+      <div class="card-header">
+        <h2 style="margin: 0;">5. Reflection</h2>
+        <span class="tag">Think</span>
+      </div>
+      <p>Talk or write about these questions:</p>
+      <ol style="margin-top: 6px;">
+        <li>In your own words, what does the denominator tell you?</li>
+        <li>In your own words, what does the numerator tell you?</li>
+        <li>Would you rather have 1/2 of a candy bar or 1/3 of the same candy bar? Why?</li>
+        <li>Can a fraction ever be bigger than 1? What would that mean?</li>
+      </ol>
+    </section>
+  </div>
+
+  <script>
+    // Helper: update fraction visuals
+    function updateFractionVisuals() {
+      const numInput = document.getElementById("numInput");
+      const denInput = document.getElementById("denInput");
+      const bar = document.getElementById("fractionBar");
+      const textBox = document.getElementById("fractionTextBox");
+      const circleText = document.getElementById("fractionCircleText");
+
+      if (!numInput || !denInput || !bar || !textBox || !circleText) return;
+
+      const num = Number(numInput.value);
+      const den = Number(denInput.value);
+
+      if (!Number.isFinite(num) || !Number.isFinite(den) || den <= 0) {
+        textBox.classList.add("error");
+        textBox.textContent = "Please choose a numerator and a denominator greater than 0.";
+        return;
+      }
+
+      // Clear the bar
+      bar.innerHTML = "";
+
+      for (let i = 0; i < den; i++) {
+        const piece = document.createElement("div");
+        piece.classList.add("fraction-piece");
+        if (i < num) {
+          piece.classList.add("fraction-piece-filled");
+        } else {
+          piece.classList.add("fraction-piece-empty");
+        }
+        bar.appendChild(piece);
+      }
+
+      const fracText = num + "/" + den;
+      circleText.textContent = fracText;
+
+      let explanation = "You chose the fraction " + fracText + ".\n";
+      explanation += "The denominator " + den + " means the whole is cut into " + den + " equal parts.\n";
+      explanation += "The numerator " + num + " means you have " + num + " of those parts.";
+
+      if (num === 0) {
+        explanation += "\nThat means you have 0 parts. You have none of the whole.";
+      } else if (num === den) {
+        explanation += "\nThat means you have all the parts: the whole thing!";
+      } else if (num > den) {
+        explanation += "\nBecause the numerator is bigger than the denominator, this fraction is greater than 1 (more than a whole).";
+      }
+
+      textBox.classList.remove("error");
+      textBox.textContent = explanation;
+    }
+
+    // Bigger fraction quiz
+    function checkBiggerQuiz() {
+      const answers = {
+        bigger1: "1/4",
+        bigger2: "2/3",
+        bigger3: "3/5"
+      };
+      const ids = ["bigger1", "bigger2", "bigger3"];
+      const feedbackEl = document.getElementById("biggerFeedback");
+      let correctCount = 0;
+      let lines = [];
+
+      ids.forEach((id, index) => {
+        const sel = document.getElementById(id);
+        if (!sel) return;
+        const chosen = sel.value;
+        const correct = answers[id];
+
+        if (chosen === correct) {
+          correctCount++;
+          lines.push("Question " + (index + 1) + ": ✅ Correct");
+        } else if (chosen === "") {
+          lines.push("Question " + (index + 1) + ": (no answer chosen)");
+        } else {
+          lines.push("Question " + (index + 1) + ": ❌ Not quite");
+        }
+      });
+
+      feedbackEl.classList.remove("error");
+      feedbackEl.textContent =
+        "You got " + correctCount + " out of 3 correct.\n\n" +
+        lines.join("\n") +
+        "\n\nThink: bigger pieces or more pieces of the same size usually means a bigger fraction.";
+    }
+
+    // Show/hide word problem answers
+    function setupWordAnswers() {
+      const buttons = document.querySelectorAll("button[data-answer-id]");
+      buttons.forEach((btn) => {
+        btn.addEventListener("click", function () {
+          const id = btn.getAttribute("data-answer-id");
+          const answerEl = document.getElementById(id);
+          if (!answerEl) return;
+          if (answerEl.style.display === "none" || answerEl.style.display === "") {
+            answerEl.style.display = "block";
+          } else {
+            answerEl.style.display = "none";
+          }
+        });
+      });
+    }
+
+    // Wire up events on load
+    (function () {
+      const updateBtn = document.getElementById("updateFractionButton");
+      if (updateBtn) {
+        updateBtn.addEventListener("click", updateFractionVisuals);
+      }
+
+      const numInput = document.getElementById("numInput");
+      const denInput = document.getElementById("denInput");
+      if (numInput && denInput) {
+        numInput.addEventListener("change", updateFractionVisuals);
+        denInput.addEventListener("change", updateFractionVisuals);
+      }
+
+      const checkBiggerButton = document.getElementById("checkBiggerButton");
+      if (checkBiggerButton) {
+        checkBiggerButton.addEventListener("click", checkBiggerQuiz);
+      }
+
+      setupWordAnswers();
+
+      // Initialize visuals once
+      updateFractionVisuals();
+    })();
+  </script>
+</body>
+</html>
