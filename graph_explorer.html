@@ -91,7 +91,7 @@
       <a href="index.html">&larr; Back to Home</a>
       <h1>Graph Explorer</h1>
       <p class="subtitle">
-        Type a rule like <code>2*x + 3</code> or <code>x**2 - 1</code> and see a table of values and a graph.
+        Type a rule like <code>2*x + 3</code> or <code>x**2 - 1</code> and see a table of values and a graph with labeled axes.
       </p>
     </header>
 
@@ -168,8 +168,8 @@
             <canvas id="graphCanvas" width="480" height="260"></canvas>
           </div>
           <p class="axis-note">
-            The horizontal axis is x, and the vertical axis is f(x).
-            The graph automatically rescales to fit your points.
+            The horizontal axis is x, and the vertical axis is f(x). Tick marks and labels show the numbers so you can
+            read intercepts like where the graph crosses the x-axis (f(x) = 0).
           </p>
         </div>
       </div>
@@ -222,7 +222,7 @@
           What do you notice about the slope?
         </li>
         <li>
-          Compare <code>f(x) = 2*x + 3</code> and <code>g(x) = 2*x - 1</code>. How are their graphs similar? Different?
+          Try <code>f(x) = x - 5</code>. Where does the graph cross the x-axis (where f(x) = 0)? Where does it cross the y-axis?
         </li>
       </ul>
     </section>
@@ -286,6 +286,33 @@
       };
     }
 
+    // Choose a "nice" step size for tick marks
+    function niceStep(range, targetTicks) {
+      const raw = range / targetTicks;
+      const power = Math.floor(Math.log10(Math.abs(raw)));
+      const base = Math.pow(10, power);
+      const frac = raw / base;
+      let niceFrac;
+      if (frac <= 1.5) niceFrac = 1;
+      else if (frac <= 3) niceFrac = 2;
+      else if (frac <= 7) niceFrac = 5;
+      else niceFrac = 10;
+      return niceFrac * base;
+    }
+
+    function formatTickValue(v) {
+      const absV = Math.abs(v);
+      const rounded = Math.round(v);
+      if (Math.abs(v - rounded) < 1e-6) {
+        return String(rounded);
+      }
+      if (absV >= 1000 || absV < 0.01) {
+        return v.toExponential(1);
+      }
+      if (absV < 10) return v.toFixed(1);
+      return v.toFixed(0);
+    }
+
     function drawGraph(points) {
       const canvas = document.getElementById("graphCanvas");
       if (!canvas) return;
@@ -300,35 +327,77 @@
       const bounds = computeBounds(points);
       const { minX, maxX, minY, maxY } = bounds;
 
+      // Graph area margins (space for labels)
+      const marginLeft = 40;
+      const marginRight = 10;
+      const marginTop = 10;
+      const marginBottom = 30;
+
+      const gw = w - marginLeft - marginRight;
+      const gh = h - marginTop - marginBottom;
+      const gx0 = marginLeft;
+      const gy0 = marginTop;
+
       function toCanvasX(x) {
-        return ((x - minX) / (maxX - minX)) * w;
+        return gx0 + ((x - minX) / (maxX - minX)) * gw;
       }
       function toCanvasY(y) {
-        return h - ((y - minY) / (maxY - minY)) * h;
+        return gy0 + gh - ((y - minY) / (maxY - minY)) * gh;
       }
 
-      // Background grid
+      // Determine nice tick steps
+      const xRange = maxX - minX;
+      const yRange = maxY - minY;
+      const xStep = niceStep(xRange, 6);
+      const yStep = niceStep(yRange, 6);
+
+      // Background grid and tick labels
       ctx.save();
+      ctx.font = "10px system-ui, -apple-system, BlinkMacSystemFont, sans-serif";
+      ctx.fillStyle = "#6b7280";
       ctx.strokeStyle = "#e5e7eb";
       ctx.lineWidth = 1;
 
-      // Vertical grid lines
-      const gridLines = 8;
-      for (let i = 1; i < gridLines; i++) {
-        const gx = (w / gridLines) * i;
+      // Vertical grid lines + x tick labels
+      let xStart = Math.ceil(minX / xStep) * xStep;
+      for (let xv = xStart; xv <= maxX + 1e-9; xv += xStep) {
+        const cx = toCanvasX(xv);
+        // grid line
         ctx.beginPath();
-        ctx.moveTo(gx, 0);
-        ctx.lineTo(gx, h);
+        ctx.moveTo(cx, gy0);
+        ctx.lineTo(cx, gy0 + gh);
         ctx.stroke();
+
+        // tick at bottom
+        ctx.beginPath();
+        ctx.moveTo(cx, gy0 + gh);
+        ctx.lineTo(cx, gy0 + gh + 4);
+        ctx.stroke();
+
+        // label under tick
+        const label = formatTickValue(xv);
+        ctx.fillText(label, cx - ctx.measureText(label).width / 2, gy0 + gh + 14);
       }
 
-      // Horizontal grid lines
-      for (let i = 1; i < gridLines; i++) {
-        const gy = (h / gridLines) * i;
+      // Horizontal grid lines + y tick labels
+      let yStart = Math.ceil(minY / yStep) * yStep;
+      for (let yv = yStart; yv <= maxY + 1e-9; yv += yStep) {
+        const cy = toCanvasY(yv);
+        // grid line
         ctx.beginPath();
-        ctx.moveTo(0, gy);
-        ctx.lineTo(w, gy);
+        ctx.moveTo(gx0, cy);
+        ctx.lineTo(gx0 + gw, cy);
         ctx.stroke();
+
+        // tick at left
+        ctx.beginPath();
+        ctx.moveTo(gx0 - 4, cy);
+        ctx.lineTo(gx0, cy);
+        ctx.stroke();
+
+        // label left of tick
+        const label = formatTickValue(yv);
+        ctx.fillText(label, gx0 - 6 - ctx.measureText(label).width, cy + 3);
       }
       ctx.restore();
 
@@ -341,8 +410,8 @@
       if (minY < 0 && maxY > 0) {
         const y0 = toCanvasY(0);
         ctx.beginPath();
-        ctx.moveTo(0, y0);
-        ctx.lineTo(w, y0);
+        ctx.moveTo(gx0, y0);
+        ctx.lineTo(gx0 + gw, y0);
         ctx.stroke();
       }
 
@@ -350,8 +419,8 @@
       if (minX < 0 && maxX > 0) {
         const x0 = toCanvasX(0);
         ctx.beginPath();
-        ctx.moveTo(x0, 0);
-        ctx.lineTo(x0, h);
+        ctx.moveTo(x0, gy0);
+        ctx.lineTo(x0, gy0 + gh);
         ctx.stroke();
       }
       ctx.restore();
