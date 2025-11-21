@@ -3,10 +3,254 @@
 <head>
   <meta charset="UTF-8">
   <title>Lesson 1 – Test Page</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>Lesson 1 – It Works!</h1>
-  <p>If you can see this page, the lesson link is working.</p>
-  <p><a href="index.html">← Back to Home</a></p>
+  <div class="page">
+    <header style="margin-bottom: 18px;">
+      <a href="index.html">&larr; Back to Home</a>
+      <h1>Intro to Algebra – Lesson 1</h1>
+      <p class="subtitle">
+        <strong>What is a variable?</strong> A variable is a number that can change, but follows a rule.
+      </p>
+    </header>
+
+    <!-- Concept Card -->
+    <section class="card">
+      <div class="card-header">
+        <h2 style="margin: 0;">1. Big Idea</h2>
+        <span class="tag">Concept</span>
+      </div>
+      <p>
+        In arithmetic, you work with specific numbers (like 5 + 7). In algebra, you work with
+        <strong>rules</strong> that work for <em>any</em> number.
+      </p>
+      <p>
+        A <strong>variable</strong> is a letter (like <code>x</code>) that stands for a number
+        that can change. For example, if a rule says “add 5 to any number,” we can write:
+      </p>
+      <p style="margin-left: 10px;"><strong>f(x) = x + 5</strong></p>
+      <p>
+        If <code>x = 1</code>, then <code>f(1) = 6</code>.<br />
+        If <code>x = 10</code>, then <code>f(10) = 15</code>.<br />
+        The <strong>same rule</strong> works every time.
+      </p>
+    </section>
+
+    <!-- Warm-up Card -->
+    <section class="card">
+      <div class="card-header">
+        <h2 style="margin: 0;">2. Warm-Up: Follow the Rule</h2>
+        <span class="tag">Try it</span>
+      </div>
+      <p>Use the rule <strong>x + 5</strong>. Fill in the missing values in your head or on paper:</p>
+      <table>
+        <thead>
+          <tr>
+            <th>x</th>
+            <th>x + 5</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>6</td></tr>
+          <tr><td>2</td><td>7</td></tr>
+          <tr><td>3</td><td>8</td></tr>
+          <tr><td>10</td><td>15</td></tr>
+        </tbody>
+      </table>
+      <p class="mini-note">
+        A variable lets us talk about <em>all</em> of those at once: “take any x, add 5”.
+      </p>
+    </section>
+
+    <!-- Expressions vs Equations -->
+    <section class="card">
+      <div class="card-header">
+        <h2 style="margin: 0;">3. Expressions vs. Equations</h2>
+        <span class="tag">Vocabulary</span>
+      </div>
+      <p>
+        An <strong>expression</strong> is a rule or calculation, like <code>3x + 2</code> or <code>x - 4</code>.
+        It does <em>not</em> have an equals sign.
+      </p>
+      <p>
+        An <strong>equation</strong> is a statement that two things are equal, like
+        <code>3x + 2 = 11</code>. It <em>does</em> have an equals sign and can be true or false.
+      </p>
+      <ul style="margin-top: 4px;">
+        <li><code>3x + 1</code> → expression</li>
+        <li><code>2x = 14</code> → equation</li>
+        <li><code>x - 4</code> → expression</li>
+        <li><code>5x + 3 = 28</code> → equation</li>
+      </ul>
+    </section>
+
+    <!-- Function Machine -->
+    <section class="card">
+      <div class="card-header">
+        <h2 style="margin: 0;">4. Function Machine</h2>
+        <span class="tag">Interactive</span>
+      </div>
+      <p>
+        A <strong>function</strong> is a rule that takes an input number and gives an output number.
+        You can think of it like a machine:
+      </p>
+
+      <div class="machine-container">
+        <div class="machine-box">
+          <div class="machine-label">Input</div>
+          <div class="machine-value" id="machineInputDisplay">x = 1</div>
+        </div>
+
+        <div class="machine-arrow">➡</div>
+
+        <div class="machine-box">
+          <div class="machine-label">Rule</div>
+          <div class="machine-value" id="machineRuleDisplay">f(x) = 3x + 2</div>
+        </div>
+
+        <div class="machine-arrow">➡</div>
+
+        <div class="machine-box">
+          <div class="machine-label">Output</div>
+          <div class="machine-value" id="machineOutputDisplay">f(1) = 5</div>
+        </div>
+      </div>
+
+      <div class="form-row" style="margin-top: 14px;">
+        <label for="ruleInput"><strong>Rule f(x) =</strong></label>
+        <input type="text" id="ruleInput" value="3*x + 2" />
+      </div>
+
+      <div class="form-row">
+        <label for="xInput"><strong>x =</strong></label>
+        <input type="number" id="xInput" value="1" step="1" />
+
+        <button id="runMachineButton">Run Machine</button>
+        <button id="addToTableButton" class="secondary">Add to Table</button>
+      </div>
+
+      <div id="machineOutputBox" class="output-box">
+        Try a rule and a value of x, then click <strong>Run Machine</strong>.
+      </div>
+
+      <h3 style="margin-top: 16px;">History Table</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>x</th>
+            <th>f(x)</th>
+            <th>Rule</th>
+          </tr>
+        </thead>
+        <tbody id="historyBody"></tbody>
+      </table>
+    </section>
+
+    <!-- Expression Evaluator -->
+    <section class="card">
+      <div class="card-header">
+        <h2 style="margin: 0;">5. Practice: Evaluate Expressions</h2>
+        <span class="tag">Interactive</span>
+      </div>
+
+      <div class="form-row">
+        <label for="presetExpression"><strong>Expression:</strong></label>
+        <select id="presetExpression">
+          <option value="2*x + 3">2x + 3</option>
+          <option value="4*x - 1">4x - 1</option>
+          <option value="x/2 + 5">x/2 + 5</option>
+          <option value="x**2 + 1">x² + 1</option>
+        </select>
+
+        <label for="presetX"><strong>x =</strong></label>
+        <input type="number" id="presetX" value="0" step="1" />
+
+        <button id="evalPresetButton">Evaluate</button>
+      </div>
+
+      <div id="presetOutputBox" class="output-box" style="margin-top: 8px;">
+        Choose an expression and a value for x, then click <strong>Evaluate</strong>.
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <h2>6. Reflection</h2>
+        <span class="tag">Think</span>
+      </div>
+      <ol>
+        <li>What is a variable?</li>
+        <li>How is an equation different from an expression?</li>
+        <li>What patterns did you notice when you tested different x values?</li>
+      </ol>
+    </section>
+  </div>
+
+  <script>
+    function evaluateExpression(expr, x) {
+      const forbidden = /[;{}[\]]/;
+      if (forbidden.test(expr)) throw new Error("Unsafe characters");
+      return Function("x", "return " + expr)(x);
+    }
+
+    const ruleInput = document.getElementById("ruleInput");
+    const xInput = document.getElementById("xInput");
+    const runBtn = document.getElementById("runMachineButton");
+    const addBtn = document.getElementById("addToTableButton");
+
+    const outBox = document.getElementById("machineOutputBox");
+    const inputDisp = document.getElementById("machineInputDisplay");
+    const ruleDisp = document.getElementById("machineRuleDisplay");
+    const outDisp = document.getElementById("machineOutputDisplay");
+    const history = document.getElementById("historyBody");
+
+    function runMachine(addRow) {
+      const expr = ruleInput.value.trim();
+      const x = Number(xInput.value);
+
+      inputDisp.textContent = "x = " + x;
+      ruleDisp.textContent = "f(x) = " + expr;
+
+      try {
+        const result = evaluateExpression(expr, x);
+        outDisp.textContent = "f(" + x + ") = " + result;
+        outBox.textContent = "Result: " + result;
+        outBox.classList.remove("error");
+
+        if (addRow) {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `<td>${x}</td><td>${result}</td><td>${expr}</td>`;
+          history.appendChild(tr);
+        }
+      } catch (e) {
+        outBox.textContent = "Invalid rule.";
+        outBox.classList.add("error");
+      }
+    }
+
+    runBtn.onclick = () => runMachine(false);
+    addBtn.onclick = () => runMachine(true);
+
+    // Preset evaluator
+    const presetExpr = document.getElementById("presetExpression");
+    const presetX = document.getElementById("presetX");
+    const evalBtn = document.getElementById("evalPresetButton");
+    const presetOut = document.getElementById("presetOutputBox");
+
+    evalBtn.onclick = () => {
+      try {
+        const expr = presetExpr.value;
+        const x = Number(presetX.value);
+        const result = evaluateExpression(expr, x);
+        presetOut.textContent = "Result: " + result;
+        presetOut.classList.remove("error");
+      } catch (e) {
+        presetOut.textContent = "Invalid expression.";
+        presetOut.classList.add("error");
+      }
+    };
+  </script>
 </body>
+</html>
 </html>
